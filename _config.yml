@@ -1,1 +1,39 @@
-theme: jekyll-theme-leap-day
+# Site settings
+name: 陈远波的博客
+email: 1732522974@qq.com
+author: 陈远波
+url: https://jacobychan.github.io/
+resume_site: https://jacobychan.github.io/
+github: https://github.com/jacobychan/
+baseurl: ""
+description: Actually, less is more!
+meta_description: 陈远波;个人博客;学而不思则罔;思而不学则殆;生命不止;折腾不休
+motto: It's our wits that make us men.
+banner: 学而不思则罔，思而不学则殆。
+
+#permalink: /:categories/:year/:month/:day/:title/
+permalink: /:year/:month/:day/:title/
+paginate: 10
+
+exclude: ['README.md', 'Gemfile.lock', 'Gemfile', 'Rakefile']
+
+github_username: jacobychan
+highlighter: Pygments
+
+# Build settings
+markdown: kramdown
+
+baidu_analysis: 94be4b0f9fc5d94cc0d0415ea6761ae9
+
+FB:
+  comments :
+    provider : duoshuo
+    duoshuo:
+        short_name : jacobychan
+    disqus :
+        short_name : freudkang
+    # facebook :
+    #   appid : 123
+    #   num_posts: 5
+    #   width: 580
+    #   colorscheme: light
