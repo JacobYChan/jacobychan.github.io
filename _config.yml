@@ -13,12 +13,14 @@ banner: 学而不思则罔，思而不学则殆。
 
 #permalink: /:categories/:year/:month/:day/:title/
 permalink: /:year/:month/:day/:title/
-paginate: 10
+plugins: [jekyll-paginate]
+paginate: 5
+paginate_path: "page:num"
 
 exclude: ['README.md', 'Gemfile.lock', 'Gemfile', 'Rakefile']
 
 github_username: jacobychan
-highlighter: Pygments
+highlighter: Rouge
 
 # Build settings
 markdown: kramdown
@@ -27,11 +29,11 @@ baidu_analysis: 94be4b0f9fc5d94cc0d0415ea6761ae9
 
 FB:
   comments :
-    provider : duoshuo
+    provider : jacobychan
     duoshuo:
         short_name : jacobychan
     disqus :
-        short_name : freudkang
+        short_name : jacobychan
     # facebook :
     #   appid : 123
     #   num_posts: 5
