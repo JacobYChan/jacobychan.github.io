@@ -120,4 +120,4 @@ jekyll server
 
 微信
 ----------------
-![微信二维码付款给Freud]({{ '/styles/images/weixin.png' | prepend: site.baseurl }})
+![微信二维码付款给Jacob]({{ '/styles/images/weixin.png' | prepend: site.baseurl }})
