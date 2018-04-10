@@ -69,7 +69,7 @@ categories: 技术文章
     var obj = Object.assign({}, o1, o2, o3);
     console.log(obj); // { a: 1, b: 2, c: 3 }
 
-`注意：继承属性和不可枚举属性是不能拷贝的`
+`注意：继承属性和不可枚举属性是不能拷贝的，否则在处理某些问题时会造成堆栈溢出的报错信息`
 
     var obj = Object.create({foo: 1}, { // foo 是个继承属性。
       bar: {

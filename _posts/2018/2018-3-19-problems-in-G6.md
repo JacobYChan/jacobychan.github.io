@@ -37,7 +37,9 @@ categories: 技术文章
 -----------------------------
 ### 学习心得
 
-##### G6总体而言分为三大块，Node/Edge/Net，首先要先建立一个Net，作为整个画布的容器，Net有一些属性和方法
+ G6总体而言分为三大块，Node/Edge/Net，首先要先建立一个Net，作为整个画布的容器，Net有一些属性和方法，当然这是最基础的，还有Canvas，Layout，Global等一些基础类，还有Matrix，Color，Util等一些工具类。借用官网的一张图作为关系介绍
+ ![介绍图](/styles/images/g6-info.png 'g6介绍')
+
 <br>
 
 #### 1、net
@@ -194,11 +196,11 @@ edge作为连接每个节点的连接线，也是非常重要，edge内部有自
 
 ### 遇到的坑
 
-##### &nbsp;&nbsp;在使用过程中难免会遇到一些坑，毕竟这个项目还不成熟，相关文档也不是太完善，所以使用起来只能靠自己去摸索，还好在使用过程中经过自己的探索和研究还算顺利，如果大家遇到一些在文档上找不到的问题，不妨去github上看看前人有没有帮你踩过坑。附：[github问题](https://github.com/antvis/g6/issues)
+ &nbsp;&nbsp;在使用过程中难免会遇到一些坑，毕竟这个项目还不成熟，相关文档也不是太完善，所以使用起来只能靠自己去摸索，还好在使用过程中经过自己的探索和研究还算顺利，如果大家遇到一些在文档上找不到的问题，不妨去github上看看前人有没有帮你踩过坑。附：[github问题](https://github.com/antvis/g6/issues)
 
 ------------------------------------------
 
-##### 1、数据的存储与读取
+ 1、数据的存储与读取
 
 在存储数据时使用的是net的save方法，读取数据使用的是net的read方法，因为数据的格式是json类型的，所以存储时下意识的使用`json.stringify()`格式化一下，但是此时读取的时候要使用`json.parse()`转换一下，否则读取数据的时候会报错
 
@@ -212,7 +214,7 @@ edge作为连接每个节点的连接线，也是非常重要，edge内部有自
 
 -----------------------------------
 
-##### 2、渲染数据的两种方法
+ 2、渲染数据的两种方法
 
 前面我们提到可以用read()来读取数据，同时也可以使用net.source(nodes, edges)来渲染数据，但是两种渲染的方式是不一样的，read读取数据时内部还有source字段，如果没有这个字段就会报错
 
@@ -225,20 +227,103 @@ edge作为连接每个节点的连接线，也是非常重要，edge内部有自
 
 ------------------------------------
 
-##### 3、net在使用插件时，很多功能就会受限，有些配置会不起作用，比如this.net.edge().shape('VHV')这个规定连接线形状的设置就会失效，所以除非插件的效果能完全满足需求，否则尽量不要用插件。
+ 3、net在使用插件时，很多功能就会受限，有些配置会不起作用，比如this.net.edge().shape('VHV')这个规定连接线形状的设置就会失效，所以除非插件的效果能完全满足需求，否则尽量不要用插件。
 
     plugins: [dagre], // 使用dagred插件
 
 
 -----------------------------------
 
-##### 4、在使用`this.net.edge().shape('VHV')` 来定制线段形状时能够保证新添加的节点按照要求来设置形状，但是当把数据保存后再读取时发现之前的线段形状并没有生效，又还原成之前的直线了，这个时候需要在每条边添加的时候就要设置好边的形状，否则读取出来的数据是不会生效的。
+ 4、在使用`this.net.edge().shape('VHV')` 来定制线段形状时能够保证新添加的节点按照要求来设置形状，但是当把数据保存后再读取时发现之前的线段形状并没有生效，又还原成之前的直线了，这个时候需要在每条边添加的时候就要设置好边的形状，否则读取出来的数据是不会生效的。
 
     let newEdge = {
       'shape': 'VHV', // 连接线的形状，使用这种折线不用管起始折点和终点的坐标位置
     }
 
 ----------------------------------
+
+5、html节点无法进行完美的缩放效果，由于HTML节点样式主要依赖的是css样式，而不是自身原本的节点样式，所以在缩放的时候会出现变形，只有canvas节点能够支持缩放效果，但是canvas节点的交互效果和扩展性不强，canvas可以绘制常规的图形，包括圆形，扇形，矩形，椭圆，圆弧，多边形，直线，二阶曲线，三阶曲线等等，还能画一些文字和图像，同时能做出一些动画效果。详情可参考[canvas方法](https://antv.alipay.com/zh-cn/g6/1.x/api/canvas.html)
+
+-----------------------------------
+
+
+6、在HTML节点强行改变css样式时，在画布有拖动过程，或者新增节点，拖动节点，拖动线段等操作时，画布刷新后都会还原，比如我强行做一些样式修改：
+
+    let containers = document.getElementsByClassName('g6-html-node-container')
+      Array.prototype.slice.call(containers, 0).forEach((container, index) => {
+        container.getElementsByClassName('node-container-content')[0].style.width = container.style.width
+        container.getElementsByClassName('node-container-content')[0].style.height = container.style.height
+      })
+
+------------------------------------
+
+7、自己在写缩放功能时可以用到matrix这个类，里面包含三阶矩阵和两阶向量两块，分别有一些方法，可实现画布的移动，放大缩小功能。
+      
+    // 缩放功能，封装成一个方法
+    zoom(x, y,  r) {
+      var matrix = new G6.Matrix.Matrix3();
+      matrix.translate(-x, -y);
+      matrix.scale(r, r);
+      matrix.translate(x, y);
+      this.net.updateMatrix(matrix);
+    },
+
+----------------------------------------
+
+8、常用的设置节点样式的方法，html节点不支持这种写法
+
+    net.node().style({stroke: null}); // 去除所有节点的外边框
+    // 设置每个节点的填充色和边框颜色，fillOpacity: 1设置填充色的透明度
+    net.node().style(model=>{
+      return {fill: model.color, 'stroke':model.color, 'fillOpacity': 1};
+    })
+    // 或者在节点里添加，一样的效果
+    node = {
+      id: 'a',
+      x: 100,
+      y: 100,
+      style: {fill: 'red', stroke: 'red', size: 100, 'fillOpacity': 1}
+    }
+    
+---------------------------------------
+
+9、一般设置mode的时候会默认提供几种模式，default，none，edit，drag，add等等，文档里每种模式下支持哪些行为都是有说明的，这个时候问题来了，比如我想禁用某种行为该如何设置，有两种方法
+
+
+    {
+      // 默认模式
+      default: [
+        'dragNode', 'dragEdge', 'dragBlank', 'clickBlankClearActive', 'resizeEdge', 'clickActive',
+        'resizeNode', 'wheelZoom'
+      ],
+      // 编辑模式
+      edit: [
+        'dragNode', 'dragEdge', 'clickBlankClearActive', 'resizeEdge', 'clickActive',
+        'multiSelect', 'resizeNode', 'shortcut', 'wheelZoom'
+      ],
+      // 拖动模式（查看模式）
+      drag: ['shortcut', 'dragCanvas', 'wheelZoom'],
+      // 添加模式
+      add: ['clickAddNode', 'dragAddEdge']
+    }
+
+比如我想去掉点击选中的行为模式，可以这么做
+    // 方法一
+    net.addBehaviour(['clickActive']); // 增加某种行为模式
+    net.removeBehaviour(['clickActive']);// 删除某种行为模式
+
+    // 方法二
+    //重新定义modes集合，然后去掉不想要的行为，这样在引用时会自动覆盖原有的行为
+
+    modes: {               // 模式集
+      // 自定义模式，可覆盖原有的模式
+      default: [
+        'dragNode', 'dragEdge', 'dragBlank', 'clickBlankClearActive', 'resizeEdge', 'resizeNode'
+      ]
+    },
+    mode: 'default' // 有编辑、none等模式，采用默认的模式
+
+--------------------------------------------------
 
 ### 最终效果
 
